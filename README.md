@@ -32,6 +32,9 @@ This file is the control panel for the entire project. All important parameters 
 - Slip/sinkage output → `./slip_sinkage_output`
 - VTK terrain output → `./slip_sinkage_output/slip_sinkage_trials_motion_terrain_vtk`
 
+**Wheel mesh note**
+- If the TREAD Coupon Wheel is selected in `config.py`, the simulation uses the mesh file referenced as `TREAD_Assembly.obj`, which is included in this repository.
+
 Please note that the current values are compute efficient on a single machine. For finer particle sizes or larger domains, execution on a GPU-enabled compute cluster is recommended.
 
 ---
