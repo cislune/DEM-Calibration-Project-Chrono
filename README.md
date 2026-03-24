@@ -7,7 +7,7 @@ This document explains the purpose of the core files in this project and how the
 ## 1. `config.py` — **Central Settings File**
 
 **Purpose:**  
-This file is the **control panel** for the entire project. All important parameters are defined here. If changes to simulation behavior are required, this is typically the **only file that needs to be edited**.
+This file is the control panel for the entire project. All important parameters are defined here. If changes to simulation behavior are required, this is typically the only file that needs to be edited.
 
 ### What this file controls:
 - Terrain properties (grain size, stiffness, friction)
@@ -17,7 +17,7 @@ This file is the **control panel** for the entire project. All important paramet
 - Output folders and file names
 
 ### How it is used:
-- All other scripts **read values from `config.py`**
+- All other scripts read values from **config.py`**
 - No simulations are run directly from this file
 - Changes made here automatically affect all downstream steps
 
@@ -39,7 +39,7 @@ Please note that the current values are compute efficient on a single machine. F
 ## 2. `terrain_generation.py` — **Terrain Creation and Settling**
 
 **Purpose:**  
-This script **creates the terrain** (loose particles) and allows it to settle under gravity until it reaches a stable state. This represents preparing the soil before any wheel motion occurs.
+This script creates the terrain (loose particles) and allows it to settle under gravity until it reaches a stable state. This represents preparing the soil before any wheel motion occurs.
 
 ### What this script does
 1. Creates a simulation container (the “bin”)
@@ -74,7 +74,7 @@ This script simulates a wheel rolling on the settled terrain to measure:
 - Contact forces between the wheel and terrain  
   *(contact_type, A, B, f_x, f_y, f_z, X, Y, Z)*
 
-Each slip value is run as a **separate trial**. Singular slip trials per run can be configured through `config.py`.
+Each slip value is run as a separate trial. Singular slip trials per run can be configured through `config.py`.
 
 ### What this script does
 1. Loads the settled terrain from `terrain_generation.py`
@@ -107,7 +107,7 @@ Each slip case is stored in its own folder.
 ## 4. `csv_to_vtk.py` — **CSV → VTK Conversion Utility**
 
 **Purpose:**  
-This script converts terrain motion and contact force data from **CSV format to VTK format** for visualization in tools such as ParaView. CSV is used for simulation output, while VTK is required for 3D visualization workflows.
+This script converts terrain motion and contact force data from CSV format to VTK format for visualization in tools such as ParaView. CSV is used for simulation output, while VTK is required for 3D visualization workflows.
 
 ---
 
