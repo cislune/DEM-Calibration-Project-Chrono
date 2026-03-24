@@ -8,15 +8,11 @@ Use the following command to remove a conda env
 
 `conda env remove --name myenv`
 
-    ^where myenv is the name of the conda env you want to remove 
-
 -1B. LISTING NAMES OF CONDA ENV 
 
 `conda env list` 
 
-will list the names of all of the previously created conda environments on your machine. 
-
-there will also be an asterisk (*) next to the environment you currently have activated :) 
+will list the names of all of the previously created conda environments on your machine, and there will be an asterisk (*) next to the environment currently activated.
 
 
 ## 0.  PRE-REQUISITES 
