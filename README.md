@@ -1,16 +1,17 @@
 # Codebase Overview
-**PREVIEW THIS FILE IN VS CODE OR CURSOR IDE USING Ctrl+Shift+V ON WINDOWS/LINUX**
+
 This document explains the purpose of the core files in this project and how they work together. The files are listed in the order they are typically used.
+
 ---
 
 ## 1. `config.py` — **Central Settings File**
 
 **Purpose:**  
-This file is the **control panel** for the entire project. All important parameters live here. If you want to change how the simulation behaves, this is usually the **only file you need to edit**.
+This file is the **control panel** for the entire project. All important parameters are defined here. If changes to simulation behavior are required, this is typically the **only file that needs to be edited**.
 
 ### What this file controls:
 - Terrain properties (grain size, stiffness, friction)
-- Wheel (Baseline,TREAD Coupon Wheel) properties (radius, width, weight)
+- Wheel (Baseline, TREAD Coupon Wheel) properties (radius, width, weight)
 - Gravity and simulation timing
 - Slip values to test
 - Output folders and file names
@@ -18,36 +19,36 @@ This file is the **control panel** for the entire project. All important paramet
 ### How it is used:
 - All other scripts **read values from `config.py`**
 - No simulations are run directly from this file
-- Changing a value here automatically affects all downstream steps
+- Changes made here automatically affect all downstream steps
 
 ### Typical interaction
 - Adjust terrain parameters for generation
-- Change wheel option, size or weight
-- Choose how many slip cases to run
-- Select whether demo values or custom values are used
+- Modify wheel option, size, or weight
+- Define number of slip cases to run
+- Select between demo values or custom values
 
 ### Output directories defined here:
 - Terrain generation output → `./sphere_tgen_output`
 - Slip/sinkage output → `./slip_sinkage_output`
 - VTK terrain output → `./slip_sinkage_output/slip_sinkage_trials_motion_terrain_vtk`
 
-Please note that the current values are compute efficient on current machine. If you desire more fine particle sizes, larger domain, etc. I suggest running on a compute cluster where you can allocate more GPUs.
+Please note that the current values are compute efficient on a single machine. For finer particle sizes or larger domains, execution on a GPU-enabled compute cluster is recommended.
 
 ---
 
 ## 2. `terrain_generation.py` — **Terrain Creation and Settling**
 
 **Purpose:**  
-This script **creates the terrain** (loose particles) and lets it settle under gravity until it reaches a stable state. This represents preparing the soil before any wheel motion occurs.
+This script **creates the terrain** (loose particles) and allows it to settle under gravity until it reaches a stable state. This represents preparing the soil before any wheel motion occurs.
 
 ### What this script does
 1. Creates a simulation container (the “bin”)
 2. Spawns thousands of small terrain particles using multiple sphere templates
 3. Applies gravity
-4. Lets the terrain fall and settle naturally
+4. Allows the terrain to settle naturally
 5. Saves:
    - A sequence of terrain snapshots (for visualization)
-   - One final file containing the settled terrain state
+   - A final file containing the settled terrain state
 
 ### Outputs produced
 - Terrain motion files (CSV)
@@ -68,12 +69,12 @@ These files are later reused by the wheel (`slip_sinkage.py`) simulation.
 
 **Purpose:**  
 This script simulates a wheel rolling on the settled terrain to measure:
-- How much it **slips**
-- How much it **sinks**
-- The contact forces between the wheel and terrain  
+- Slip behavior  
+- Sinkage  
+- Contact forces between the wheel and terrain  
   *(contact_type, A, B, f_x, f_y, f_z, X, Y, Z)*
 
-Each slip value is run as a **separate trial**. Singular slip trials per run can be achieved through altering `config.py`.
+Each slip value is run as a **separate trial**. Singular slip trials per run can be configured through `config.py`.
 
 ### What this script does
 1. Loads the settled terrain from `terrain_generation.py`
@@ -95,7 +96,7 @@ Each slip value is run as a **separate trial**. Singular slip trials per run can
 ### Output directory
 - `./slip_sinkage_output/trial_X_slip_Y/`
 
-Each slip case gets its own folder.
+Each slip case is stored in its own folder.
 
 ### When to run it
 - After terrain generation is complete
@@ -106,20 +107,16 @@ Each slip case gets its own folder.
 ## 4. `csv_to_vtk.py` — **CSV → VTK Conversion Utility**
 
 **Purpose:**  
-This script converts terrain motion data from **CSV format to VTK format** for visualization in tools like ParaView.
-
-This is useful because:
-- CSV is used for simulation output (lightweight, structured)
-- VTK is required for **3D visualization and rendering**
+This script converts terrain motion and contact force data from **CSV format to VTK format** for visualization in tools such as ParaView. CSV is used for simulation output, while VTK is required for 3D visualization workflows.
 
 ---
 
 ### What this script does
-1. Reads terrain CSV files containing particle positions
+1. Reads terrain CSV files containing particle positions  
 2. Extracts:
    - X, Y, Z coordinates (point positions)
-   - Additional data columns (stored as point attributes)
-3. Creates a point cloud using `pyvista`
+   - Additional columns (stored as point data)
+3. Constructs a point cloud using `pyvista`
 4. Writes `.vtk` files for visualization
 
 ---
@@ -140,14 +137,14 @@ This is useful because:
 
 ### When to run it
 - After running `slip_sinkage.py`
-- Only needed if you want to visualize terrain particle motion in ParaView or similar tools
+- Required only for visualization of terrain particle motion
 
 ---
 
 ## Typical Workflow Summary
 
 1. **Edit `config.py`**  
-   Set terrain, wheel, and test parameters  
+   Define terrain, wheel, and test parameters  
 
 2. **Run `terrain_generation.py`**  
    Prepare and settle the terrain  
@@ -159,11 +156,3 @@ This is useful because:
    Convert terrain CSV outputs into VTK format for visualization  
 
 ---
-
-## Key Takeaway
-
-- `config.py` controls **everything**
-- Terrain is generated once and reused
-- Simulation reconstructs terrain from saved CSV state
-- CSV → VTK conversion enables visualization workflows
-- Outputs from earlier steps are reused later for efficiency
