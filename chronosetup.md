@@ -1,7 +1,4 @@
-## INSTRUCTIONS FOR SETTING UP PyChrono AND PyDEME (WP1 GOALS/REQURIEMENTS)
-**writing this with an attempt to be as transparent and helpful as possible!**
-
-**PREVIEW THIS FILE IN VS CODE OR CURSOR IDE USING Ctrl+Shift+V ON WINDOWS/LINUX**
+## INSTRUCTIONS FOR SETTING UP PyChrono and PyDEME
 
 ## -1. NOTES 
 
