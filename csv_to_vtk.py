@@ -3,24 +3,27 @@ import pyvista as pv
 import config as c
 import os
 
-CSV_DIR = os.path.join(c.SLIP_SINKAGE_OUT_DIR, c.SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_CSV_FILE_NAME)
-OUT_DIR = os.path.join(c.SLIP_SINKAGE_OUT_DIR, c.SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_VTK_FILE_NAME)
+BASE_DIR = c.SLIP_SINKAGE_OUT_DIR
 
-os.makedirs(OUT_DIR, exist_ok=True)
+for trial in os.listdir(BASE_DIR):
+    trial_dir = os.path.join(BASE_DIR, trial)
 
-for file in os.listdir(CSV_DIR):
-    if file.endswith(".csv"):
+    if not os.path.isdir(trial_dir):
+        continue
 
-        path = os.path.join(CSV_DIR, file)
-        df = pd.read_csv(path)
+    for file in os.listdir(trial_dir):
+        if file.endswith(".csv") and c.SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME in file:
 
-        # point coordinates
-        points = df[["X","Y","Z"]].values
-        cloud = pv.PolyData(points)
+            path = os.path.join(trial_dir, file)
+            df = pd.read_csv(path)
 
-        # add every column as point data
-        for col in df.columns:
-            if col not in ["X","Y","Z"]:
-                cloud[col] = df[col].values
+            # point coordinates
+            points = df[["X", "Y", "Z"]].values
+            cloud = pv.PolyData(points)
 
-        cloud.save(os.path.join(OUT_DIR, file.replace(".csv", ".vtk")))
+            # add every column as point data
+            for col in df.columns:
+                if col not in ["X", "Y", "Z"]:
+                    cloud[col] = df[col].values
+
+            cloud.save(os.path.join(trial_dir, file.replace(".csv", ".vtk")))
