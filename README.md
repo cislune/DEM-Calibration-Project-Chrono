@@ -1,7 +1,6 @@
 # Codebase Overview
 **PREVIEW THIS FILE IN VS CODE OR CURSOR IDE USING Ctrl+Shift+V ON WINDOWS/LINUX**
 This document explains the purpose of the core files in this project and how they work together. The files are listed in the order they are typically used.
-
 ---
 
 ## 1. `config.py` — **Central Settings File**
