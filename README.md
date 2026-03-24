@@ -29,11 +29,8 @@ This file is the control panel for the entire project. All important parameters 
 
 **Output directories defined here:**
 - Terrain generation output → `./sphere_tgen_output`
-- Slip/sinkage output → `./slip_sinkage_output`
-- VTK terrain output → `./slip_sinkage_output/slip_sinkage_trials_motion_terrain_vtk`
-
-**Wheel mesh note**
-- If the TREAD Coupon Wheel is selected in `config.py`, the simulation uses the mesh file referenced as `TREAD_Assembly.obj`, which is included in this repository.
+- Slip/sinkage output → `./slip_sinkage_output/sphere_particles`
+- VTK terrain output → `./slip_sinkage_output/sphere_particles` *(converted files saved here unless changed in script)*
 
 Please note that the current values are compute efficient on a single machine. For finer particle sizes or larger domains, execution on a GPU-enabled compute cluster is recommended.
 
@@ -60,7 +57,7 @@ This script creates the terrain (loose particles) and allows it to settle under 
 **Output directory**
 - `./sphere_tgen_output`
 
-These files are later reused by the wheel (`slip_sinkage.py`) simulation.
+These files are later reused by the wheel (`slipsinkage.py`) simulation.
 
 **When to run it**
 - Run once before running slip or sinkage tests
@@ -68,7 +65,7 @@ These files are later reused by the wheel (`slip_sinkage.py`) simulation.
 
 ---
 
-**3. `slip_sinkage.py` — Wheel–Terrain Interaction Simulation**
+**3. `slipsinkage.py` — Wheel–Terrain Interaction Simulation**
 
 **Purpose:**  
 This script simulates a wheel rolling on the settled terrain to measure:
@@ -97,7 +94,7 @@ Each slip value is run as a separate trial. Singular slip trials per run can be 
 - Final settled state after wheel motion
 
 **Output directory**
-- `./slip_sinkage_output/trial_X_slip_Y/`
+- `./slip_sinkage_output/sphere_particles/trial_X_slip_Y/`
 
 Each slip case is stored in its own folder.
 
@@ -110,7 +107,7 @@ Each slip case is stored in its own folder.
 **4. `csv_to_vtk.py` — CSV → VTK Conversion Utility**
 
 **Purpose:**  
-This script converts terrain motion and contact force data from CSV format to VTK format for visualization in tools such as ParaView. CSV is used for simulation output, while VTK is required for 3D visualization workflows.
+This script converts terrain motion data from CSV format to VTK format for visualization in tools such as ParaView. CSV is used for simulation output, while VTK is required for 3D visualization workflows.
 
 ---
 
@@ -124,22 +121,30 @@ This script converts terrain motion and contact force data from CSV format to VT
 
 ---
 
+**Important note**
+- This script expects terrain CSV files to exist in a subdirectory containing motion outputs.
+- Ensure the correct directory name is used in `config.py` or updated in this script if paths are modified.
+
+---
+
 **Inputs**
-- Terrain CSV files from:
+- Terrain CSV files from simulation output directories inside:
   ```
-  ./slip_sinkage_output/slip_sinkage_trials_motion_terrain_csv
+  ./slip_sinkage_output/sphere_particles/
   ```
 
+---
+
 **Outputs**
-- Converted VTK files:
+- Converted VTK files saved to:
   ```
-  ./slip_sinkage_output/slip_sinkage_trials_motion_terrain_vtk
+  ./slip_sinkage_output/sphere_particles/
   ```
 
 ---
 
 **When to run it**
-- After running `slip_sinkage.py`
+- After running `slipsinkage.py`
 - Required only for visualization of terrain particle motion
 
 ---
@@ -152,7 +157,7 @@ This script converts terrain motion and contact force data from CSV format to VT
 2. Run `terrain_generation.py`  
    Prepare and settle the terrain  
 
-3. Run `slip_sinkage.py`  
+3. Run `slipsinkage.py`  
    Simulate wheel motion and collect data  
 
 4. Run `csv_to_vtk.py` (optional)  
