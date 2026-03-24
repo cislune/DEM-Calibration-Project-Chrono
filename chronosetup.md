@@ -1,4 +1,4 @@
-## INSTRUCTIONS FOR SETTING UP PyChrono and PyDEME
+## Setup Instructions for PyChrono and PyDEME
 
 ## -1. NOTES 
 
