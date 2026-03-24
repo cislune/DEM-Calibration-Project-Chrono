@@ -23,9 +23,7 @@ there will also be an asterisk (*) next to the environment you currently have ac
 
 0A. CHECK NVIDIA DRIVER 
 
-Use `nvidia-smi` to check your NVIDIA Driver version. The CUDA Version (top right) should be **12.8 or higher**. For example: 
-
-<img src="nvidia_smi.png" alt="nvidia-smi output" width="400"/>
+Use `nvidia-smi` to check your NVIDIA Driver version. The CUDA Version (top right) should be **12.8 or higher**.
 
 If your driver is lower than 12.8, please upgrade your NVIDIA Driver. You can find instructions and downloads at:
 
@@ -84,32 +82,6 @@ NOTE: your desired conda environment must be activated before this step
 `conda install -c conda-forge imageio-ffmpeg`
 
 `conda install -c conda-forge pandas`
-
-
-## 2. RUN DEMOS 
-
-NOTE: your desired conda environment must be activated before this step 
-
-You are ready to navigate to the demos under the "demo" parent directory and run some code! 
-
-I have included both PyChrono (CRM and MBS) and PyDEME demos from our standard demo collection as a sanity check :) 
-
-### DEMOS: SEVERAL NOTES 
-
-1. Based on the installation instructions in this doc, the CRM demo is only working on linux (for the meantime)
-2. CRM does not use GPU computing (executed on the CPU only)
-3. DEM (PyDEME) does use GPU computing (handled under the hood, no explicit GPU programming is required by the user)
-4. To confirm that your set up properly facilitates GPU utilization/memory for DEM: 
-
-    a. run any PyDEME demo via terminal 
-
-    b. open a new terminal window and run: 
-
-`watch -n 1 nvidia-smi` 
-
-    ^ you should see GPU related stats changing as the simulation is running 
-
-5. Output directories dont necessarily matter for the MBS demos therefore they are not configured. However, directories are configured for the outputs of DEM and CRM demos.
 
 
 
