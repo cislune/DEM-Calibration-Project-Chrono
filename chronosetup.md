@@ -1,23 +1,26 @@
 ## Setup Instructions for PyChrono and PyDEME
 
-## -1. NOTES 
+#----------------------------------------------------------------------------------------------------------------------------
+## NOTES 
+#----------------------------------------------------------------------------------------------------------------------------
 
--1A. REMOVING CONDA ENV 
+A. REMOVING CONDA ENV 
 
 Use the following command to remove a conda env 
 
 `conda env remove --name myenv`
 
--1B. LISTING NAMES OF CONDA ENV 
+B. LISTING NAMES OF CONDA ENV 
 
 `conda env list` 
 
 will list the names of all of the previously created conda environments on your machine, and there will be an asterisk (*) next to the environment currently activated.
 
+#----------------------------------------------------------------------------------------------------------------------------
+## PRE-REQUISITES 
+#----------------------------------------------------------------------------------------------------------------------------
 
-## 0.  PRE-REQUISITES 
-
-0A. CHECK NVIDIA DRIVER 
+A. CHECK NVIDIA DRIVER 
 
 Use `nvidia-smi` to check your NVIDIA Driver version. The CUDA Version (top right) should be **12.8 or higher**.
 
@@ -28,7 +31,7 @@ If your driver is lower than 12.8, please upgrade your NVIDIA Driver. You can fi
 
 Follow the official guide for your operating system to update the driver.
 
-0B. INSTALL miniconda3 (link to download shell script: https://www.anaconda.com/download/success)
+B. INSTALL miniconda3 (link to download shell script: https://www.anaconda.com/download/success)
 
 miniconda3 is a minimal distribution (i.e lightweight version) of the environment manager Conda. It comes with
 Python 3 and a minimal base environment. 
@@ -46,10 +49,11 @@ then run the shell script via
 **If you run into issues, it might be worth checking if your machine satisfies the system requriements**
 (https://www.anaconda.com/docs/getting-started/miniconda/system-requirements)
 
+#----------------------------------------------------------------------------------------------------------------------------
+## CREATING ENVIRONMENT AND INSTALLING PyChrono AND PyDEME
+#----------------------------------------------------------------------------------------------------------------------------
 
-## 1. CREATING ENVIRONMENT AND INSTALLING PyChrono AND PyDEME
-
-1A. Creating and activating conda (miniconda3) env 
+A. Creating and activating conda (miniconda3) env 
 
 NOTE: "myenv" can be replaced with any name you want for your environment 
 
@@ -63,7 +67,7 @@ NOTE: "myenv" can be replaced with any name you want for your environment
 
     ^activate the environment you just made 
 
-1B. INSTALLING PyChrono and PyDEME VIA CONDA 
+B. INSTALLING PyChrono and PyDEME VIA CONDA 
 
 NOTE: your desired conda environment must be activated before this step 
 
@@ -71,7 +75,7 @@ NOTE: your desired conda environment must be activated before this step
 
     ^while in general this package is avaialbe on conda-forge, the required/newer version is not yet published there.
 
-1C. EXTRA DEPENDENCIES 
+C. EXTRA DEPENDENCIES 
 
 NOTE: your desired conda environment must be activated before this step 
 
