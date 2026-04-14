@@ -1,8 +1,6 @@
 ## Setup Instructions for PyChrono and PyDEME
 
-#----------------------------------------------------------------------------------------------------------------------------
 ## NOTES 
-#----------------------------------------------------------------------------------------------------------------------------
 
 A. REMOVING CONDA ENV 
 
@@ -16,9 +14,7 @@ B. LISTING NAMES OF CONDA ENV
 
 will list the names of all of the previously created conda environments on your machine, and there will be an asterisk (*) next to the environment currently activated.
 
-#----------------------------------------------------------------------------------------------------------------------------
 ## PRE-REQUISITES 
-#----------------------------------------------------------------------------------------------------------------------------
 
 A. CHECK NVIDIA DRIVER 
 
@@ -49,9 +45,7 @@ then run the shell script via
 **If you run into issues, it might be worth checking if your machine satisfies the system requriements**
 (https://www.anaconda.com/docs/getting-started/miniconda/system-requirements)
 
-#----------------------------------------------------------------------------------------------------------------------------
 ## CREATING ENVIRONMENT AND INSTALLING PyChrono AND PyDEME
-#----------------------------------------------------------------------------------------------------------------------------
 
 A. Creating and activating conda (miniconda3) env 
 
