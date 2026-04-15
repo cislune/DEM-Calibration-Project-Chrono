@@ -25,53 +25,52 @@ DEFAULT_FRAMERATE = 60
 
 MOVIE_OUT_DIR = "./movies"  
 # directory for rendered simulation outputs
-    
 
 # SPHERE TERRAIN OUTPUT PATHS (file and directory names for sphere-terrain simulation outputs)
 
 # terrain generation outputs
-SPHERE_TERRAIN_GEN_OUT_DIR = "./sphere_tgen_output"
+SPHERE_TERRAIN_GEN_OUT_DIR = "./terrain generation output"
 # directory where terrain generation outputs are written
     
-SPHERE_TERRAIN_GENERATION_MOTION_FILE_NAME = "sphere_terrain_settling_motion"
+SPHERE_TERRAIN_GENERATION_MOTION_FILE_NAME = "terrain_settling_motion"
 # time-resolved particle motion during terrain settling (positions vs time, used to then calculate velocities)
     
-SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME = "settled_sphere_terrain_data"
+SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME = "settled_terrain_data"
 # final settled particle state after generation (used as initial condition for later tests)
 
 # slip-sinkage experiment outputs
-SLIP_SINKAGE_OUT_DIR = "./slip_sinkage_output/sphere_particles"
+SLIP_SINKAGE_OUT_DIR = "./slip sinkage output"
 # directory where slip–sinkage simulation outputs are written
 
 PRESSURE_PLATE_OUT_DIR = "./pressure_plate_output"
 # directory where pressure-plate simulation outputs are written
 
-SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "sphere_terrain_slip_sinkage_trials_motion_terrain"
+SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "slip_sinkage_terrain_motion"
 # time-resolved terrain particle positions during slip-sinkage trials
 
-SLIP_SINKAGE_TRIALS_MOTION_WHEEL_FILE_NAME = "sphere_terrain_slip_sinkage_trials_motion_wheel"
+SLIP_SINKAGE_TRIALS_MOTION_WHEEL_FILE_NAME = "slip_sinkage_wheel_motion"
 # time-resolved wheel kinematics and mesh motion
 
-SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "sphere_terrain_slip_sinkage_trials_contact_force"
+SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_data"
 # contact forces between wheel and terrain over time
 
-SLIP_SINKAGE_TRIALS_SETTLED_DATA_FILE_NAME = "sphere_terrain_slip_sinkage_trials_settled_data"
+SLIP_SINKAGE_TRIALS_SETTLED_DATA_FILE_NAME = "slip_sinkage_settled_data"
 # settled terrain state, used as initial condition for slip–sinkage trials
 
 # pressure-plate experiment outputs
-PRESSURE_PLATE_MOTION_TERRAIN_FILE_NAME = "sphere_terrain_pressure_plate_motion_terrain"
+PRESSURE_PLATE_MOTION_TERRAIN_FILE_NAME = "pressure_plate_terrain_motion"
 # time-resolved terrain particle positions written per frame as a .csv file
 
-PRESSURE_PLATE_CONTACT_FORCE_FILE_NAME = "sphere_terrain_pressure_plate_contact_force"
+PRESSURE_PLATE_CONTACT_FORCE_FILE_NAME = "pressure_plate_contact_data"
 # time-resolved plate–terrain contact data written per frame (contact ownership, force, and contact point)
 
-PRESSURE_PLATE_RESPONSE_FILE_NAME = "sphere_terrain_pressure_plate_response"
+PRESSURE_PLATE_RESPONSE_FILE_NAME = "pressure_plate_response_data"
 # processed pressure-plate response data (time, plate position, sinkage, vertical force, pressure, terrain height, terrain mass)
 
-PRESSURE_PLATE_SETTLED_DATA_FILE_NAME = "sphere_terrain_pressure_plate_settled_data"
+PRESSURE_PLATE_SETTLED_DATA_FILE_NAME = "pressure_plate_settled_data"
 # final terrain state at the end of the pressure-plate simulation
 
-PRESSURE_PLATE_MOTION_PLATE_FILE_NAME = "sphere_terrain_pressure_plate_motion_plate"
+PRESSURE_PLATE_MOTION_PLATE_FILE_NAME = "pressure_plate_motion"
 # time-resolved plate mesh output written per frame as VTK
     
 #----------------------------------------------------------------------------------------------------------------------------
