@@ -179,7 +179,7 @@ WHEEL_IXX_DEMO_st = (WHEEL_MASS_DEMO_st/12)*((3*(WHEEL_RAD_DEMO_st**2)) + (WHEEL
 WHEEL_OBJ_FILE_DEMO_st = "mesh/rover_wheels/viper_wheel_right.obj"  
 # mesh file used to represent the demo/baseline wheel geometry in the simulation
     
-BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325)/1000)/50) * 0.90
+BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325)/1000)/55)*0.90
 # base terrain particle radius (m) used with the demo wheel case 
 # sets the nominal particle size for the granular bed
 
