@@ -43,6 +43,9 @@ SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME = "settled_sphere_terrain_data"
 SLIP_SINKAGE_OUT_DIR = "./slip_sinkage_output/sphere_particles"
 # directory where slip–sinkage simulation outputs are written
 
+PRESSURE_PLATE_OUT_DIR = "./pressure_plate_output"
+# directory where pressure-plate simulation outputs are written
+
 SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "sphere_terrain_slip_sinkage_trials_motion_terrain"
 # time-resolved terrain particle positions during slip-sinkage trials
 
