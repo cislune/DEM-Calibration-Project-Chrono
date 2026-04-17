@@ -51,7 +51,7 @@ SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "slip_sinkage_terrain_motion"
 SLIP_SINKAGE_TRIALS_MOTION_WHEEL_FILE_NAME = "slip_sinkage_wheel_motion"
 # time-resolved wheel kinematics and mesh motion
 
-SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_data"
+SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_forces"
 # contact forces between wheel and terrain over time
 
 SLIP_SINKAGE_TRIALS_SETTLED_DATA_FILE_NAME = "slip_sinkage_settled_data"
