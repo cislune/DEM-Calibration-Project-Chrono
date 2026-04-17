@@ -21,14 +21,24 @@ OUTPUT_ROOT.mkdir(parents=True, exist_ok=True)
 # created automatically if it does not already exist
 
 SETTLED_TERRAIN_CSV = (
-    PROJECT_ROOT / c.SPHERE_TERRAIN_GEN_OUT_DIR / f"{c.SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME}.csv"
+    PROJECT_ROOT
+    / c.SPHERE_TERRAIN_GEN_OUT_DIR
+    / getattr(c, "SPHERE_TERRAIN_GEN_SETTLED_SUBDIR", "settled data")
+    / f"{c.SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME}.csv"
 )
 # path to the baseline settled terrain file generated before wheel loading
 # this serves as the undeformed reference state against which compaction and settlement are measured
+# FIXED: terrain generation writes the settled file inside the "settled data" subdirectory
 
 SLIP_ROOT_DIR = PROJECT_ROOT / c.SLIP_SINKAGE_OUT_DIR
-# root directory containing all slip–sinkage simulation trial folders
-# each trial folder is expected to contain terrain motion CSV files and wheel motion VTK files
+# root directory containing all slip-sinkage simulation trial folders
+# each trial folder is expected to contain per-slip subfolders, and each slip folder contains
+# terrain motion CSV files and wheel motion VTK files inside dedicated subdirectories
+
+SLIP_TERRAIN_MOTION_SUBDIR = getattr(c, "SLIP_SINKAGE_TERRAIN_MOTION_SUBDIR", "terrain motion")
+SLIP_WHEEL_MOTION_SUBDIR = getattr(c, "SLIP_SINKAGE_WHEEL_MOTION_SUBDIR", "wheel motion")
+# subdirectory names inside each slip case folder
+# FIXED: slip-sinkage outputs are nested under Trial X / Slip Y / {terrain motion, wheel motion, ...}
 
 WHEEL_LABEL = "TREAD Coupon Wheel"
 # descriptive label used in plot titles, legends, and summary file names
@@ -62,10 +72,10 @@ SMOOTH_WIN_Y = 3
 
 PLOT_FIELD = "compaction_max"
 # field selected for visualization
-# compaction_mean → mean increase in local packing fraction over all frames
-# compaction_max  → maximum increase in local packing fraction over all frames
-# settlement_mean → mean downward terrain displacement over all frames
-# settlement_max  → maximum downward terrain displacement over all frames
+# compaction_mean -> mean increase in local packing fraction over all frames
+# compaction_max  -> maximum increase in local packing fraction over all frames
+# settlement_mean -> mean downward terrain displacement over all frames
+# settlement_max  -> maximum downward terrain displacement over all frames
 
 COMPACTION_THRESHOLD = 1e-4
 # threshold used to classify a grid cell as significantly compacted
@@ -267,7 +277,7 @@ def extract_frame_number(path: Path):
 
 def moving_average_1d(arr, window):
     if window <= 1:
-        # no smoothing requested → return original data
+        # no smoothing requested -> return original data
         return arr.copy()
 
     kernel = np.ones(window, dtype=float)
@@ -324,7 +334,7 @@ def read_wheel_center_from_vtk(path: Path):
         # read the VTK wheel mesh using PyVista
 
         if mesh.points is None or len(mesh.points) == 0:
-            # empty mesh → cannot infer wheel center
+            # empty mesh -> cannot infer wheel center
             return None
 
         # approximate wheel center as the centroid of all wheel-mesh vertices
@@ -356,7 +366,7 @@ def save_aggregate_csv(x_edges, y_edges, phi0, comp_mean, comp_max, settle_mean,
                 }
             )
             # flatten gridded response fields into row-wise tabular form
-            # each row corresponds to one analysis cell in physical x–y space
+            # each row corresponds to one analysis cell in physical x-y space
 
     # save aggregated compaction/settlement data for further analysis outside this script
     pd.DataFrame(rows).to_csv(out_csv, index=False)
@@ -506,10 +516,10 @@ def summarize_compaction_metrics(compaction_mean_s, compaction_max_s, settlement
         "integrated_settlement_max_map_m3_per_m": float(np.sum(positive_settlement) * cell_area),
     }
     # return scalar descriptors of terrain response:
-    # peak_compaction_* → strongest local densification
-    # mean_compaction_* → average densification intensity
-    # compaction_area_above_threshold_m2 → spatial footprint of substantial compaction
-    # integrated_* maps → area-integrated magnitudes useful for comparing runs globally
+    # peak_compaction_* -> strongest local densification
+    # mean_compaction_* -> average densification intensity
+    # compaction_area_above_threshold_m2 -> spatial footprint of substantial compaction
+    # integrated_* maps -> area-integrated magnitudes useful for comparing runs globally
 
 
 def build_summary_figure(results, out_path):
@@ -565,7 +575,7 @@ def build_summary_figure(results, out_path):
 
 
 def parse_slip_value_from_dirname(dirname: str):
-    m = re.search(r"_slip_([0-9.]+)$", dirname)
+    m = re.search(r"^Slip\s+([0-9.]+)$", dirname.strip())
     if not m:
         # reject directory names that do not match the expected slip-format convention
         return None
@@ -584,24 +594,26 @@ def discover_slip_dirs(root: Path):
         # ensure the slip-output root exists before trying to scan it
         raise FileNotFoundError(f"Slip root directory not found: {root}")
 
-    for path in sorted(root.iterdir()):
-        if not path.is_dir():
-            # skip files
+    for trial_path in sorted(root.iterdir()):
+        if not trial_path.is_dir():
+            # skip files at the trial level
             continue
 
-        if "_slip_" not in path.name:
-            # only keep folders whose names indicate a slip trial
-            continue
+        for slip_path in sorted(trial_path.iterdir()):
+            if not slip_path.is_dir():
+                # skip non-directory entries inside each trial directory
+                continue
 
-        slip = parse_slip_value_from_dirname(path.name)
-        if slip is None:
-            # skip malformed folders that do not contain a valid numerical slip value
-            continue
+            slip = parse_slip_value_from_dirname(slip_path.name)
+            if slip is None:
+                # skip folders that are not valid slip-case directories
+                continue
 
-        dirs.append((slip, path))
-        # collect pairs of (slip value, directory path)
+            dirs.append((slip, slip_path))
+            # collect pairs of (slip value, slip-case directory path)
 
     # sort slip runs by numerical slip value so outputs appear in physically meaningful order
+    # FIXED: scan Trial X / Slip Y layout produced by slipsinkage.py
     return sorted(dirs, key=lambda x: x[0])
 
 
@@ -641,12 +653,20 @@ def main():
         print(f"Processing slip {slip_display} in {run_dir}")
         print("=" * 80)
 
-        terrain_files = sorted(run_dir.glob(TERRAIN_GLOB), key=extract_frame_number)
-        wheel_files = sorted(run_dir.glob(WHEEL_GLOB), key=extract_frame_number)
+        terrain_dir = run_dir / SLIP_TERRAIN_MOTION_SUBDIR
+        wheel_dir = run_dir / SLIP_WHEEL_MOTION_SUBDIR
+        # FIXED: terrain and wheel outputs live inside dedicated subdirectories in each slip folder
+
+        if not terrain_dir.exists():
+            print(f"Skipping {slip_display}: missing terrain directory {terrain_dir}")
+            continue
+
+        terrain_files = sorted(terrain_dir.glob(TERRAIN_GLOB), key=extract_frame_number)
+        wheel_files = sorted(wheel_dir.glob(WHEEL_GLOB), key=extract_frame_number) if wheel_dir.exists() else []
         # retrieve time-ordered terrain and wheel files for this slip case
 
         if not terrain_files:
-            print(f"Skipping {slip_display}: no terrain files found")
+            print(f"Skipping {slip_display}: no terrain files found in {terrain_dir}")
             # skip empty or incomplete runs with no terrain snapshots
             continue
 
@@ -703,8 +723,8 @@ def main():
             settle_mean = np.nanmean(settle_stack, axis=0)
             settle_max = np.nanmax(settle_stack, axis=0)
             # collapse temporal dimension into summary fields:
-            # mean → average terrain response over the whole simulation
-            # max  → strongest terrain response achieved at any time
+            # mean -> average terrain response over the whole simulation
+            # max  -> strongest terrain response achieved at any time
 
         comp_mean[np.isnan(comp_mean)] = 0.0
         comp_max[np.isnan(comp_max)] = 0.0
@@ -834,6 +854,7 @@ def main():
     build_summary_figure(results, summary_png)
     print(f"Saved summary figure : {summary_png}")
     # save one multi-panel comparison figure across all slip conditions
+
 
 if __name__ == "__main__":
     # execute the compaction-analysis workflow when the script is run directly
