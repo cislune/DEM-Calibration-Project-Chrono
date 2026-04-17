@@ -280,3 +280,4 @@ SLIP_VALUES_st = np.linspace(0.0, 0.6, 3)
 WHEEL_ANG_VEL_st = np.pi / 2  
 # prescribed wheel angular velocity (rad/s)
 # combined with wheel radius and linear velocity to determine slip ratio/conditions
+
