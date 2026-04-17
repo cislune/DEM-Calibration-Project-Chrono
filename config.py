@@ -1,49 +1,64 @@
-import numpy as np 
+import numpy as np
 
-#----------------------------------------------------------------------------------------------------------------------------
-# SIMULATION MODE CONFIGURATION (defines test parameters + terrain representation)
-#---------------------------------------------------------------------------------------------------------------------------- 
+# ----------------------------------------------------------------------------------------------------------------------------
+# SIMULATION MODE CONFIGURATION
+# ----------------------------------------------------------------------------------------------------------------------------
 
 MOVIE_TYPES_LIST = ["generation", "slip", "pressure plate"]
-# generation → settle particles to form terrain
-# slip → wheel slip/sinkage test
-# pressure plate → plate penetration test
+# generation -> settle particles to form terrain
+# slip -> wheel slip/sinkage test
+# pressure plate -> plate penetration test
 
-TERRAIN_TYPES_LIST = ["sphere"]  
+TERRAIN_TYPES_LIST = ["sphere"]
 # particle-based terrain (discrete spheres)
 
-MOVIE_TYPE = MOVIE_TYPES_LIST[0]  
+MOVIE_TYPE = MOVIE_TYPES_LIST[0]
 # select experiment type (default: terrain generation)
-# [1] → slip
-# [2] → plate penetration
+# [1] -> slip
+# [2] -> plate penetration
 
-TERRAIN_TYPE = TERRAIN_TYPES_LIST[0]  
+TERRAIN_TYPE = TERRAIN_TYPES_LIST[0]
 # terrain representation (sphere-based)
 
 DEFAULT_FRAMERATE = 60
 # output visualization frame rate (frames per second, fps)
 
-MOVIE_OUT_DIR = "./movies"  
+MOVIE_OUT_DIR = "./movies"
 # directory for rendered simulation outputs
 
-# SPHERE TERRAIN OUTPUT PATHS (file and directory names for sphere-terrain simulation outputs)
 
-# terrain generation outputs
+# ----------------------------------------------------------------------------------------------------------------------------
+# SPHERE TERRAIN OUTPUT PATHS
+# ----------------------------------------------------------------------------------------------------------------------------
+
 SPHERE_TERRAIN_GEN_OUT_DIR = "./terrain generation output"
-# directory where terrain generation outputs are written
-    
+# root directory where terrain generation outputs are written
+
+SPHERE_TERRAIN_GEN_MOTION_SUBDIR = "motion"
+# subdirectory for time-resolved terrain-settling motion
+
+SPHERE_TERRAIN_GEN_SETTLED_SUBDIR = "settled data"
+# subdirectory for final settled terrain state
+
 SPHERE_TERRAIN_GENERATION_MOTION_FILE_NAME = "terrain_settling_motion"
-# time-resolved particle motion during terrain settling (positions vs time, used to then calculate velocities)
-    
+# time-resolved particle motion during terrain settling
+
 SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME = "settled_terrain_data"
-# final settled particle state after generation (used as initial condition for later tests)
+# final settled particle state after generation
 
-# slip-sinkage experiment outputs
+
+# ----------------------------------------------------------------------------------------------------------------------------
+# SLIP-SINKAGE EXPERIMENT OUTPUT PATHS
+# ----------------------------------------------------------------------------------------------------------------------------
+
 SLIP_SINKAGE_OUT_DIR = "./slip sinkage output"
-# directory where slip–sinkage simulation outputs are written
+# root directory where slip-sinkage simulation outputs are written
 
-PRESSURE_PLATE_OUT_DIR = "./pressure plate output"
-# directory where pressure-plate simulation outputs are written
+SLIP_SINKAGE_TERRAIN_MOTION_SUBDIR = "terrain motion"
+SLIP_SINKAGE_WHEEL_MOTION_SUBDIR = "wheel motion"
+SLIP_SINKAGE_CONTACT_FORCES_SUBDIR = "contact forces"
+SLIP_SINKAGE_SETTLED_SUBDIR = "settled data"
+# standard subdirectory names inside each slip case folder
 
 SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "slip_sinkage_terrain_motion"
 # time-resolved terrain particle positions during slip-sinkage trials
@@ -55,229 +70,230 @@ SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_data"
 # contact forces between wheel and terrain over time
 
 SLIP_SINKAGE_TRIALS_SETTLED_DATA_FILE_NAME = "slip_sinkage_settled_data"
-# settled terrain state, used as initial condition for slip–sinkage trials
+# settled terrain state at the end of slip-sinkage trials
 
-# pressure-plate experiment outputs
+
+# ----------------------------------------------------------------------------------------------------------------------------
+# PRESSURE PLATE EXPERIMENT OUTPUT PATHS
+# ----------------------------------------------------------------------------------------------------------------------------
+
+PRESSURE_PLATE_OUT_DIR = "./pressure plate output"
+# directory where pressure-plate simulation outputs are written
+
 PRESSURE_PLATE_MOTION_TERRAIN_FILE_NAME = "pressure_plate_terrain_motion"
-# time-resolved terrain particle positions written per frame as a .csv file
+# time-resolved terrain particle positions written per frame as CSV
 
 PRESSURE_PLATE_CONTACT_FORCE_FILE_NAME = "pressure_plate_contact_data"
-# time-resolved plate–terrain contact data written per frame (contact ownership, force, and contact point)
+# time-resolved plate-terrain contact data written per frame
 
 PRESSURE_PLATE_RESPONSE_FILE_NAME = "pressure_plate_response_data"
-# processed pressure-plate response data (time, plate position, sinkage, vertical force, pressure, terrain height, terrain mass)
+# processed pressure-plate response data
 
 PRESSURE_PLATE_SETTLED_DATA_FILE_NAME = "pressure_plate_settled_data"
 # final terrain state at the end of the pressure-plate simulation
 
 PRESSURE_PLATE_MOTION_PLATE_FILE_NAME = "pressure_plate_motion"
 # time-resolved plate mesh output written per frame as VTK
-    
-#----------------------------------------------------------------------------------------------------------------------------
-# SOLVER / NUMERICAL INTEGRATION SETTINGS	
-#----------------------------------------------------------------------------------------------------------------------------
 
-MAX_VELOCITY_st = 30  
+
+# ----------------------------------------------------------------------------------------------------------------------------
+# SOLVER / NUMERICAL INTEGRATION SETTINGS
+# ----------------------------------------------------------------------------------------------------------------------------
+
+MAX_VELOCITY_st = 30
 # velocity cap to maintain numerical stability and avoid missed contacts
 
-ERROR_OUT_VELOCITY_st = 30  
+ERROR_OUT_VELOCITY_st = 30
 # hard cutoff: abort simulation if exceeded (indicates instability)
 
-G_MAG_st = 9.81  
+G_MAG_st = 9.81
 # gravitational acceleration magnitude (m/s^2)
 
-GRAVITATIONAL_ACCELERATION_st = [0, 0, -G_MAG_st]  
+GRAVITATIONAL_ACCELERATION_st = [0, 0, -G_MAG_st]
 # gravity vector (z-down convention)
 
-STEP_SIZE_st = 5e-6  
-# time step size (s); small values improve simulation stability and fidelity, at the cost of runtime
+STEP_SIZE_st = 5e-6
+# time step size (s)
 
-TRIAL_RUN_TIME_SLIP_SINKAGE_st = 5.0  
-# duration/total simulation time for each experiment (s)
-TRIAL_RUN_TIME_PRESSURE_PLATE_st = 5.0  
-# duration/total simulation time for each experiment (s)
+TRIAL_RUN_TIME_SLIP_SINKAGE_st = 5.0
+# duration for each slip-sinkage experiment (s)
 
-DOMAIN_EXPANSION_FACTOR_st = 4.0  
+TRIAL_RUN_TIME_PRESSURE_PLATE_st = 5.0
+# duration for each pressure-plate experiment (s)
+
+DOMAIN_EXPANSION_FACTOR_st = 4.0
 # expands computational domain to mitigate boundary effects
-# prevents artificial interactions with domain walls that can influence contact forces and material response
 
-#----------------------------------------------------------------------------------------------------------------------------
-# MATERIAL PROPERTIES: PARTICLE TERRAIN (defines bulk and contact behavior of the granular medium)
-#----------------------------------------------------------------------------------------------------------------------------
 
-E_st = 1e5  
-# Young’s Modulus (Pa): controls elastic stiffness during contact (normal force–displacement response)
+# ----------------------------------------------------------------------------------------------------------------------------
+# MATERIAL PROPERTIES: PARTICLE TERRAIN
+# ----------------------------------------------------------------------------------------------------------------------------
 
-NU_st = 0.24  
-# Poisson’s Ratio: ratio of lateral to axial strain under loading (affects contact deformation behavior)
+E_st = 1e5
+# Young's Modulus (Pa)
 
-COR_st = 0.9  
-# Coefficient of Restitution: fraction of normal relative velocity recovered after collision (controls energy loss)
+NU_st = 0.24
+# Poisson's Ratio
 
-MU_st = 0.3  
-# Static Friction Coefficient: threshold ratio of tangential to normal force for onset of sliding
+COR_st = 0.9
+# Coefficient of Restitution
 
-CRR_st = 0.1  
-# Rolling Resistance Coefficient: resists relative rolling motion at contacts due to deformation and energy dissipation
+MU_st = 0.3
+# Static Friction Coefficient
 
-COHESION_st = 50.0  
-# Cohesive strength: resistance to shear separation
+CRR_st = 0.1
+# Rolling Resistance Coefficient
 
-TERRAIN_DENSITY_st = 2.5e3  
-# Bulk density (kg/m^3): used to compute particle mass
+COHESION_st = 50.0
+# Cohesive strength
 
-#----------------------------------------------------------------------------------------------------------------------------
+TERRAIN_DENSITY_st = 2.5e3
+# Bulk density (kg/m^3)
+
+
+# ----------------------------------------------------------------------------------------------------------------------------
 # OBJECT-SPECIFIC CONTACT PARAMETERS
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 
-MU_contact_wheel_st = 0.8  
-# wheel–terrain friction coefficient: sets the Coulomb limit (max tangential force = μ·normal force)
+MU_contact_wheel_st = 0.8
+# wheel-terrain friction coefficient
 
-COR_contact_wheel_st = 0.6  
-# wheel–terrain coefficient of restitution: controls normal velocity recovery and impact energy loss at contacts
+COR_contact_wheel_st = 0.6
+# wheel-terrain coefficient of restitution
 
-COHESION_contact_wheel_st = 50.0  
-# wheel–terrain cohesive strength (Pa or equivalent): adds adhesive normal/tangential resistance independent of load
+COHESION_contact_wheel_st = 50.0
+# wheel-terrain cohesive strength
 
-MU_contact_plate_st = 0.5  
-# plate–terrain friction coefficient: limits tangential shear force at the plate–terrain interface
+MU_contact_plate_st = 0.5
+# plate-terrain friction coefficient
 
-#----------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------
 # WHEEL CONFIGURATION
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 
-USE_DEMO_WHEEL_st = True  
-# if True, use the predefined reference wheel configuration below 
-# if False, use the user-defined wheel parameters in the next section
+USE_DEMO_WHEEL_st = True
+# if True, use predefined demo wheel configuration
+# if False, use user-defined wheel parameters below
 
 
-# DEMO WHEEL (REFERENCE CONFIGURATION)
-# predefined wheel setup used for verification, debugging, and baseline testing
-# provides a stable reference case before introducing custom wheel geometry or loading
+# DEMO WHEEL
 
-WHEEL_RAD_DEMO_st = 0.25        
-# demo wheel radius (m); sets the outer size of the wheel and affects contact geometry and sinkage behavior
+WHEEL_RAD_DEMO_st = 0.25
+# demo wheel radius (m)
 
-WHEEL_WIDTH_DEMO_st = 0.2       
-# demo wheel width (m); sets the lateral contact width with the terrain
+WHEEL_WIDTH_DEMO_st = 0.2
+# demo wheel width (m)
 
-WHEEL_WEIGHT_DEMO_st = 100.0    
-# demo wheel weight (N); gravitational load applied by the wheel
+WHEEL_WEIGHT_DEMO_st = 100.0
+# demo wheel weight (N)
 
-WHEEL_MASS_DEMO_st = WHEEL_WEIGHT_DEMO_st / G_MAG_st  
-# demo wheel mass (kg), computed from weight using gravitational acceleration magnitude set earlier
+WHEEL_MASS_DEMO_st = WHEEL_WEIGHT_DEMO_st / G_MAG_st
+# demo wheel mass (kg)
 
-WHEEL_IYY_DEMO_st = WHEEL_MASS_DEMO_st * ((WHEEL_RAD_DEMO_st**2)/2)  
-# mass moment of inertia about the wheel spin axis (kg*m^2) 
-# governs resistance to angular acceleration during rolling (aka how hard it is to change how fast the wheel is spinning)
+WHEEL_IYY_DEMO_st = WHEEL_MASS_DEMO_st * ((WHEEL_RAD_DEMO_st ** 2) / 2)
+# spin-axis inertia
 
-WHEEL_IXX_DEMO_st = (WHEEL_MASS_DEMO_st/12)*((3*(WHEEL_RAD_DEMO_st**2)) + (WHEEL_WIDTH_DEMO_st**2))
-# mass moment of inertia about transverse axis (kg*m^2) 
-# governs resistance to rotation about axes perpendicular to the spin axis
+WHEEL_IXX_DEMO_st = (WHEEL_MASS_DEMO_st / 12) * ((3 * (WHEEL_RAD_DEMO_st ** 2)) + (WHEEL_WIDTH_DEMO_st ** 2))
+# transverse inertia
 
-WHEEL_OBJ_FILE_DEMO_st = "mesh/rover_wheels/viper_wheel_right.obj"  
-# mesh file used to represent the demo/baseline wheel geometry in the simulation
-    
-BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325)/1000)/55)*0.69
-# base terrain particle radius (m) used with the demo wheel case 
-# sets the nominal particle size for the granular bed
+WHEEL_OBJ_FILE_DEMO_st = "mesh/rover_wheels/viper_wheel_right.obj"
+# demo wheel mesh
 
-TARGET_NORMAL_FORCE_DEMO_st = 200.0  
-# target total normal load (N) applied to the terrain during the demo wheel test
+BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325) / 1000) / 55) * 0.69
+# base terrain particle radius for demo wheel case
 
-SUPPLEMENTARY_FORCE_DEMO_st = TARGET_NORMAL_FORCE_DEMO_st - WHEEL_WEIGHT_DEMO_st  
-# additional downward force (N) required beyond the wheel’s own weight 
-# used to achieve the specified target normal load
+TARGET_NORMAL_FORCE_DEMO_st = 200.0
+# target total normal load (N)
 
-#----------------------------------------------------------------------------------------------------------------------------
+SUPPLEMENTARY_FORCE_DEMO_st = TARGET_NORMAL_FORCE_DEMO_st - WHEEL_WEIGHT_DEMO_st
+# additional downward force (N)
+
+
+# ----------------------------------------------------------------------------------------------------------------------------
 # USER-DEFINED WHEEL CONFIGURATION
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 
-WHEEL_RAD_st = 0.201  
-# wheel radius (m); sets overall size and contact geometry
+WHEEL_RAD_st = 0.201
+# wheel radius (m)
 
-WHEEL_WIDTH_st = 0.08  
-# wheel width (m); defines lateral contact area with the terrain
+WHEEL_WIDTH_st = 0.08
+# wheel width (m)
 
-LOADS = [10.0, 40.0, 60.0]  
-# set of test masses (kg) for parametric evaluation
+LOADS = [10.0, 40.0, 60.0]
+# set of test masses (kg)
 
-WHEEL_MASS_st = LOADS[0]  
-# selected wheel mass (kg) for the current simulation
+WHEEL_MASS_st = LOADS[0]
+# selected wheel mass (kg)
 
-WHEEL_WEIGHT_st = WHEEL_MASS_st * 9.81  
-# wheel weight (N); gravitational load applied to the terrain
+WHEEL_WEIGHT_st = WHEEL_MASS_st * G_MAG_st
+# wheel weight (N)
 
-WHEEL_IYY_st = WHEEL_MASS_st * ((WHEEL_RAD_st**2)/2)  
-# mass moment of inertia about the spin axis (kg*m^2)
-# determines resistance to changes in rotational speed
+WHEEL_IYY_st = WHEEL_MASS_st * ((WHEEL_RAD_st ** 2) / 2)
+# spin-axis inertia
 
-WHEEL_IXX_st = (WHEEL_MASS_st/12)*((3*(WHEEL_RAD_st**2)) + (WHEEL_WIDTH_st**2))  
-# mass moment of inertia about transverse axis perpendicular to spin axis (kg*m^2) 
-# determines resistance to tilting or pitching motion
+WHEEL_IXX_st = (WHEEL_MASS_st / 12) * ((3 * (WHEEL_RAD_st ** 2)) + (WHEEL_WIDTH_st ** 2))
+# transverse inertia
 
-WHEEL_OBJ_FILE_st = "TREAD_Assembly.obj"  
-# mesh file defining the custom wheel geometry used in the simulation
-# file must be located within working directory
+WHEEL_OBJ_FILE_st = "TREAD_Assembly.obj"
+# custom wheel mesh
 
-BASE_TERRAIN_RAD_st = ((1344.3720907681325)/1000)/50  
-# base particle radius (m) for the terrain; sets the nominal grain size
+BASE_TERRAIN_RAD_st = ((1344.3720907681325) / 1000) / 50
+# base particle radius for the terrain
 
-TARGET_NORMAL_FORCE_st = WHEEL_WEIGHT_st  
-# target normal load (N) applied to the terrain (equal to wheel weight by default)
+TARGET_NORMAL_FORCE_st = WHEEL_WEIGHT_st
+# target normal load (N)
 
-SUPPLEMENTARY_FORCE_st = 0  
-# additional downward force (N) applied beyond the wheel weight (zero by default)
+SUPPLEMENTARY_FORCE_st = 0
+# additional downward force (N)
 
-#----------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------
 # PRESSURE PLATE CONFIGURATION
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 
-PLATE_X_st = 1.4      
-# plate length in the x-direction (m); defines contact area extent
+PLATE_X_st = 1.4
+# plate length in x (m)
 
-PLATE_Y_st = 1.4      
-# plate width in the y-direction (m); defines lateral contact area
+PLATE_Y_st = 1.4
+# plate width in y (m)
 
-PLATE_THICK_st = 0.05 
-# plate thickness (m); used for mass/inertia and geometric representation
+PLATE_THICK_st = 0.05
+# plate thickness (m)
 
-PLATE_MASS_st = 200.0  
-# plate mass (kg); determines applied load during penetration
+PLATE_MASS_st = 200.0
+# plate mass (kg)
 
-PLATE_VEL_st = 1e-3    
-# prescribed downward penetration velocity (m/s); controls loading rate
+PLATE_VEL_st = 1e-3
+# downward penetration velocity (m/s)
 
-PLATE_OBJ_FILE_st = "pressureplate.obj"  
-# mesh file defining the plate geometry used in the simulation
-# must be accessible via a path relative to the working directory
+PLATE_OBJ_FILE_st = "pressureplate.obj"
+# plate mesh file
 
-#----------------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------------
 # CONTAINER (BIN) GEOMETRY
-#----------------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------------
 
-WIDTH_st = 3.5     
-# bin width in the x-direction (m); defines lateral domain extent
+WIDTH_st = 3.5
+# bin width in x (m)
 
-LENGTH_st = 3.5    
-# bin length in the y-direction (m); defines longitudinal domain extent
+LENGTH_st = 3.5
+# bin length in y (m)
 
-DEPTH_st = 0.5     
-# bin depth in the z-direction (m); sets vertical extent of the granular bed
+DEPTH_st = 0.5
+# bin depth in z (m)
 
-FULL_HEIGHT_st = DEPTH_st / 2.0  
-# mid-depth reference height (m)
-# used as an upper bound for terrain generation
+FULL_HEIGHT_st = DEPTH_st / 2.0
+# mid-depth reference height
 
-#----------------------------------------------------------------------------------------------------------------------------
-# SLIP–SINKAGE TEST PARAMETERS
-#----------------------------------------------------------------------------------------------------------------------------
 
-SLIP_VALUES_st = np.linspace(0.0, 0.6, 3)  
-# array of slip ratios (dimensionless) evaluated across trial
-# slip values: 0 = pure rolling/no slip; higher values indicate increasing slip (1 = full slip/no forward motion)
+# ----------------------------------------------------------------------------------------------------------------------------
+# SLIP-SINKAGE TEST PARAMETERS
+# ----------------------------------------------------------------------------------------------------------------------------
 
-WHEEL_ANG_VEL_st = np.pi / 2  
+SLIP_VALUES_st = np.linspace(0.0, 0.6, 3)
+# evaluated slip ratios
+
+WHEEL_ANG_VEL_st = np.pi / 2
 # prescribed wheel angular velocity (rad/s)
-# combined with wheel radius and linear velocity to determine slip ratio/conditions
-
