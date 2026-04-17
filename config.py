@@ -4,10 +4,10 @@ import numpy as np
 # SIMULATION MODE CONFIGURATION (defines test parameters + terrain representation)
 #---------------------------------------------------------------------------------------------------------------------------- 
 
-MOVIE_TYPES_LIST = ["generation", "slip", "pressure_plate"]
+MOVIE_TYPES_LIST = ["generation", "slip", "pressure plate"]
 # generation → settle particles to form terrain
 # slip → wheel slip/sinkage test
-# pressure_plate → plate penetration test
+# pressure plate → plate penetration test
 
 TERRAIN_TYPES_LIST = ["sphere"]  
 # particle-based terrain (discrete spheres)
@@ -42,7 +42,7 @@ SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME = "settled_terrain_data"
 SLIP_SINKAGE_OUT_DIR = "./slip sinkage output"
 # directory where slip–sinkage simulation outputs are written
 
-PRESSURE_PLATE_OUT_DIR = "./pressure_plate_output"
+PRESSURE_PLATE_OUT_DIR = "./pressure plate output"
 # directory where pressure-plate simulation outputs are written
 
 SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "slip_sinkage_terrain_motion"
@@ -51,7 +51,7 @@ SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME = "slip_sinkage_terrain_motion"
 SLIP_SINKAGE_TRIALS_MOTION_WHEEL_FILE_NAME = "slip_sinkage_wheel_motion"
 # time-resolved wheel kinematics and mesh motion
 
-SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_forces"
+SLIP_SINKAGE_TRIALS_CONTACT_FORCE_FILE_NAME = "slip_sinkage_contact_data"
 # contact forces between wheel and terrain over time
 
 SLIP_SINKAGE_TRIALS_SETTLED_DATA_FILE_NAME = "slip_sinkage_settled_data"
@@ -178,7 +178,7 @@ WHEEL_IXX_DEMO_st = (WHEEL_MASS_DEMO_st/12)*((3*(WHEEL_RAD_DEMO_st**2)) + (WHEEL
 WHEEL_OBJ_FILE_DEMO_st = "mesh/rover_wheels/viper_wheel_right.obj"  
 # mesh file used to represent the demo/baseline wheel geometry in the simulation
     
-BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325)/1000)/55)*0.60
+BASE_TERRAIN_RAD_DEMO_st = (((1344.3720907681325)/1000)/55)*0.7
 # base terrain particle radius (m) used with the demo wheel case 
 # sets the nominal particle size for the granular bed
 
@@ -248,7 +248,7 @@ PLATE_MASS_st = 200.0
 PLATE_VEL_st = 1e-3    
 # prescribed downward penetration velocity (m/s); controls loading rate
 
-PLATE_OBJ_FILE_st = "pressure_plate.obj"  
+PLATE_OBJ_FILE_st = "pressureplate.obj"  
 # mesh file defining the plate geometry used in the simulation
 # must be accessible via a path relative to the working directory
 
