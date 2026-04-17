@@ -34,10 +34,10 @@ MOVIE_OUT_DIR = "./movies"
 SPHERE_TERRAIN_GEN_OUT_DIR = "./terrain generation output"
 # root directory where terrain generation outputs are written
 
-SPHERE_TERRAIN_GEN_MOTION_SUBDIR = "motion"
+SPHERE_TERRAIN_GEN_MOTION_SUBDIR = "settling terrain motion"
 # subdirectory for time-resolved terrain-settling motion
 
-SPHERE_TERRAIN_GEN_SETTLED_SUBDIR = "settled data"
+SPHERE_TERRAIN_GEN_SETTLED_SUBDIR = "settled terrain data"
 # subdirectory for final settled terrain state
 
 SPHERE_TERRAIN_GENERATION_MOTION_FILE_NAME = "terrain_settling_motion"
