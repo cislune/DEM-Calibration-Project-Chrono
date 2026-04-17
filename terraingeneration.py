@@ -13,6 +13,15 @@ os.makedirs(c.SPHERE_TERRAIN_GEN_OUT_DIR, exist_ok=True)
 # create terrain-generation output directory if it does not already exist
 # define where intermediate settling frames and the final settled terrain state will be written to
 
+motion_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "motion")
+settled_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "settled data")
+# create dedicated subdirectories for terrain-generation outputs
+# keeps time-resolved settling motion separate from the final settled terrain state
+
+os.makedirs(motion_dir, exist_ok=True)
+os.makedirs(settled_dir, exist_ok=True)
+# ensure all terrain-generation output directories exist before writing files
+
 SEED = 77
 # random-number generator seed; used to make initial particle placement reproducible, and for easy debugging, validation, and data analysis
 
@@ -212,7 +221,7 @@ while t < settle_time:
 
     solver.WriteSphereFile(
         os.path.join(
-            c.SPHERE_TERRAIN_GEN_OUT_DIR,
+            motion_dir,
             f"{c.SPHERE_TERRAIN_GENERATION_MOTION_FILE_NAME}{frame:04d}.csv"
         )
     )
@@ -234,7 +243,7 @@ while t < settle_time:
 
 solver.WriteClumpFile(
     os.path.join(
-        c.SPHERE_TERRAIN_GEN_OUT_DIR,
+        settled_dir,
         f"{c.SPHERE_TERRAIN_GENERATION_SETTLED_DATA_FILE_NAME}.csv"
     )
 )
