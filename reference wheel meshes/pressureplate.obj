@@ -1,0 +1,65 @@
+# large rigid pressure plate represented as a closed mesh
+# geometry centered at the origin
+# used as a penetration/loading plate in DEM terrain simulations
+# rectangular prism (cuboid) mesh definition for a rigid pressure plate
+
+# dimensions:
+# x-length = 1.4 m   (from -0.7 to +0.7)
+# y-width  = 1.4 m   (from -0.7 to +0.7)
+# z-thickness = 0.05 m (from -0.025 to +0.025)
+
+v -0.7000000000000001 -0.7000000000000001 -0.025
+# vertex 1: bottom southwest corner
+# (x = -0.7, y = -0.7, z = -0.025)
+
+v 0.7000000000000001 -0.7000000000000001 -0.025
+# vertex 2: bottom southeast corner
+# (x = +0.7, y = -0.7, z = -0.025)
+
+v 0.7000000000000001 0.7000000000000001 -0.025
+# vertex 3: bottom northeast corner
+# (x = +0.7, y = +0.7, z = -0.025)
+
+v -0.7000000000000001 0.7000000000000001 -0.025
+# vertex 4: bottom northwest corner
+# (x = -0.7, y = +0.7, z = -0.025)
+
+v -0.7000000000000001 -0.7000000000000001 0.025
+# vertex 5: top southwest corner
+# (x = -0.7, y = -0.7, z = +0.025)
+
+v 0.7000000000000001 -0.7000000000000001 0.025
+# vertex 6: top southeast corner
+# (x = +0.7, y = -0.7, z = +0.025)
+
+v 0.7000000000000001 0.7000000000000001 0.025
+# vertex 7: top northeast corner
+# (x = +0.7, y = +0.7, z = +0.025)
+
+v -0.7000000000000001 0.7000000000000001 0.025
+# vertex 8: top northwest corner
+# (x = -0.7, y = +0.7, z = +0.025)
+
+f 1 2 3 4
+# bottom face of the plate
+# connects the four lower vertices at z = -0.025
+
+f 5 6 7 8
+# top face of the plate
+# connects the four upper vertices at z = +0.025
+
+f 1 5 8 4
+# left side face
+# vertical face at x = -0.7
+
+f 2 6 7 3
+# right side face
+# vertical face at x = +0.7
+
+f 4 3 7 8
+# back side face
+# vertical face at y = +0.7
+
+f 1 2 6 5
+# front side face
+# vertical face at y = -0.7
