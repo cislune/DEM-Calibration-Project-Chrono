@@ -835,7 +835,6 @@ def main():
     print(f"Saved summary figure : {summary_png}")
     # save one multi-panel comparison figure across all slip conditions
 
-
 if __name__ == "__main__":
     # execute the compaction-analysis workflow when the script is run directly
     main()
