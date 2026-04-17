@@ -12,8 +12,8 @@ import os
 os.makedirs(c.SPHERE_TERRAIN_GEN_OUT_DIR, exist_ok=True)
 # create terrain-generation output directory if it does not already exist
 
-motion_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "motion")
-settled_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "settled data")
+motion_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "settling terrain motion")
+settled_dir = os.path.join(c.SPHERE_TERRAIN_GEN_OUT_DIR, "settled terrain data")
 # dedicated subdirectories for time-resolved settling motion and final settled terrain state
 
 os.makedirs(motion_dir, exist_ok=True)
