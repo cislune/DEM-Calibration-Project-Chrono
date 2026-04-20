@@ -1,93 +1,147 @@
-import os
-import pandas as pd
-import pyvista as pv
-import config as c
-
-# ----------------------------------------------------------------------------------------------------------------------------
-# PREPROCESSING (define base directory and optional config fallbacks)
-# ----------------------------------------------------------------------------------------------------------------------------
-
-BASE_DIR = c.SLIP_SINKAGE_OUT_DIR
-# root directory containing all slip-sinkage trial groups
-
-SLIP_TERRAIN_MOTION_SUBDIR = getattr(c, "SLIP_SINKAGE_TERRAIN_MOTION_SUBDIR", "terrain motion")
-# support both old and updated config.py layouts
+from pathlib import Path
+import sys
 
 
-# ----------------------------------------------------------------------------------------------------------------------------
-# HELPERS
-# ----------------------------------------------------------------------------------------------------------------------------
+def get_mode() -> str:
+    while True:
+        print("\nChoose a conversion mode:")
+        print("1) CSV -> VTK")
+        print("2) VTK -> CSV")
+        choice = input("Enter 1 or 2: ").strip()
 
-def is_valid_slip_case_dir(path: str) -> bool:
-    return os.path.isdir(path) and os.path.basename(path).startswith("Slip ")
+        if choice == "1":
+            return "csv_to_vtk"
+        if choice == "2":
+            return "vtk_to_csv"
+
+        print("Invalid choice. Please enter 1 or 2.")
 
 
-def convert_csv_to_vtk(csv_path: str) -> None:
+def get_path_input(expected_ext: str) -> Path:
+    while True:
+        raw = input(
+            f"Enter a file path or folder path for {expected_ext.upper()} files: "
+        ).strip().strip('"')
+
+        if not raw:
+            print("Path cannot be empty.")
+            continue
+
+        path = Path(raw).expanduser().resolve()
+
+        if not path.exists():
+            print(f"Path does not exist: {path}")
+            continue
+
+        return path
+
+
+def collect_files(path: Path, ext: str) -> list[Path]:
+    ext = ext.lower()
+
+    if path.is_file():
+        if path.suffix.lower() != ext:
+            raise ValueError(f"Expected a {ext} file, got: {path.name}")
+        return [path]
+
+    if path.is_dir():
+        files = sorted([p for p in path.iterdir() if p.is_file() and p.suffix.lower() == ext])
+        if not files:
+            raise ValueError(f"No {ext} files found in folder: {path}")
+        return files
+
+    raise ValueError(f"Unsupported path: {path}")
+
+
+def csv_to_vtk(csv_path: Path, vtk_path: Path) -> None:
+    import pandas as pd
+    import pyvista as pv
+
     df = pd.read_csv(csv_path)
-    # load terrain particle snapshot from CSV
-
-    required_cols = ["X", "Y", "Z"]
-    missing = [col for col in required_cols if col not in df.columns]
+    required = ["X", "Y", "Z"]
+    missing = [col for col in required if col not in df.columns]
     if missing:
-        raise ValueError(f"{csv_path} is missing required columns: {missing}")
+        raise ValueError(
+            f"{csv_path.name} is missing required columns: {missing}. "
+            "CSV must contain X, Y, Z columns."
+        )
 
-    points = df[["X", "Y", "Z"]].values
-    # extract Cartesian particle coordinates
-
+    points = df[["X", "Y", "Z"]].to_numpy(dtype=float)
     cloud = pv.PolyData(points)
-    # create PyVista point cloud object
 
     for col in df.columns:
-        if col not in required_cols:
-            cloud[col] = df[col].values
-            # preserve all additional particle attributes as point data
+        if col not in ["X", "Y", "Z"]:
+            cloud.point_data[col] = df[col].to_numpy()
 
-    vtk_path = csv_path.replace(".csv", ".vtk")
     cloud.save(vtk_path)
-    # save VTK file next to the original CSV
 
 
-# ----------------------------------------------------------------------------------------------------------------------------
-# TRIAL LOOP (iterate through each trial and slip-case folder)
-# ----------------------------------------------------------------------------------------------------------------------------
+def vtk_to_csv(vtk_path: Path, csv_path: Path) -> None:
+    import pandas as pd
+    import pyvista as pv
 
-if not os.path.isdir(BASE_DIR):
-    raise FileNotFoundError(f"Slip-sinkage output directory not found: {BASE_DIR}")
+    mesh = pv.read(vtk_path)
+    points = mesh.points
 
-for trial_name in sorted(os.listdir(BASE_DIR)):
-    trial_dir = os.path.join(BASE_DIR, trial_name)
+    if points is None or len(points) == 0:
+        raise ValueError(f"{vtk_path.name} contains no points.")
 
-    if not os.path.isdir(trial_dir):
-        continue
-    # skip non-directory entries
+    data = {
+        "X": points[:, 0],
+        "Y": points[:, 1],
+        "Z": points[:, 2],
+    }
 
-    for slip_name in sorted(os.listdir(trial_dir)):
-        slip_dir = os.path.join(trial_dir, slip_name)
+    for name in mesh.point_data.keys():
+        arr = mesh.point_data[name]
+        if getattr(arr, "ndim", 1) == 1:
+            data[name] = arr
+        else:
+            for i in range(arr.shape[1]):
+                data[f"{name}_{i}"] = arr[:, i]
 
-        if not is_valid_slip_case_dir(slip_dir):
-            continue
-        # process only folders like "Slip 0.0", "Slip 0.3", etc.
+    df = pd.DataFrame(data)
+    df.to_csv(csv_path, index=False)
 
-        terrain_motion_dir = os.path.join(slip_dir, SLIP_TERRAIN_MOTION_SUBDIR)
 
-        if not os.path.isdir(terrain_motion_dir):
-            print(f"Skipping {slip_dir}: missing '{SLIP_TERRAIN_MOTION_SUBDIR}' directory")
-            continue
+def run_csv_to_vtk() -> None:
+    path = get_path_input(".csv")
+    csv_files = collect_files(path, ".csv")
 
-        # --------------------------------------------------------------------------------------------------------------------
-        # FILE SELECTION (identify terrain motion CSV files for conversion)
-        # --------------------------------------------------------------------------------------------------------------------
+    for csv_file in csv_files:
+        vtk_file = csv_file.with_suffix(".vtk")
+        print(f"Converting {csv_file} -> {vtk_file}")
+        csv_to_vtk(csv_file, vtk_file)
 
-        for file_name in sorted(os.listdir(terrain_motion_dir)):
-            if not file_name.endswith(".csv"):
-                continue
+    print(f"\nDone. Converted {len(csv_files)} file(s) from CSV to VTK.")
 
-            if c.SLIP_SINKAGE_TRIALS_MOTION_TERRAIN_FILE_NAME not in file_name:
-                continue
-            # convert only terrain motion CSV files
-            # skips contact-force CSVs, settled-data CSVs, and unrelated files
 
-            csv_path = os.path.join(terrain_motion_dir, file_name)
+def run_vtk_to_csv() -> None:
+    path = get_path_input(".vtk")
+    vtk_files = collect_files(path, ".vtk")
 
-            print(f"Converting: {csv_path}")
-            convert_csv_to_vtk(csv_path)
+    for vtk_file in vtk_files:
+        csv_file = vtk_file.with_suffix(".csv")
+        print(f"Converting {vtk_file} -> {csv_file}")
+        vtk_to_csv(vtk_file, csv_file)
+
+    print(f"\nDone. Converted {len(vtk_files)} file(s) from VTK to CSV.")
+
+
+def main() -> None:
+    try:
+        mode = get_mode()
+        if mode == "csv_to_vtk":
+            run_csv_to_vtk()
+        else:
+            run_vtk_to_csv()
+    except KeyboardInterrupt:
+        print("\nCancelled by user.")
+        sys.exit(1)
+    except Exception as exc:
+        print(f"\nError: {exc}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
