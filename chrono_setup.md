@@ -2,13 +2,13 @@
 
 ## NOTES 
 
-A. REMOVING CONDA ENV 
+### A. REMOVING CONDA ENV 
 
 Use the following command to remove a conda env 
 
 `conda env remove --name myenv`
 
-B. LISTING NAMES OF CONDA ENV 
+### B. LISTING NAMES OF CONDA ENV 
 
 `conda env list` 
 
@@ -16,7 +16,7 @@ will list the names of all of the previously created conda environments on your 
 
 ## PRE-REQUISITES 
 
-A. CHECK NVIDIA DRIVER 
+### A. CHECK NVIDIA DRIVER 
 
 Use `nvidia-smi` to check your NVIDIA Driver version. The CUDA Version (top right) should be **12.8 or higher**.
 
@@ -27,27 +27,33 @@ If your driver is lower than 12.8, please upgrade your NVIDIA Driver. You can fi
 
 Follow the official guide for your operating system to update the driver.
 
-B. INSTALL miniconda3 (link to download shell script: https://www.anaconda.com/download/success)
+### B. INSTALL miniconda3 
 
-miniconda3 is a minimal distribution (i.e lightweight version) of the environment manager Conda. It comes with
+(link to download shell script: https://www.anaconda.com/download/success)
+
+miniconda3 is a minimal distribution (i.e lightweight version) of the environment manager Conda. It comes with  
 Python 3 and a minimal base environment. 
 
 For this project, it will be easiest to create an environment (env). It will be like a nice little container for all of your packages, libraries, and other dependencies. 
 
 Once the shell script is downloaded, turn it into an executable using the command 
 
-`sudo chmod +x shell_script_name.sh` (where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
+`sudo chmod +x shell_script_name.sh`  
+
+(where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
 
 then run the shell script via 
 
-`./shell_script_name.sh` (where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
+`./shell_script_name.sh`  
 
-**If you run into issues, it might be worth checking if your machine satisfies the system requriements**
+(where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
+
+**If you run into issues, it might be worth checking if your machine satisfies the system requriements**  
 (https://www.anaconda.com/docs/getting-started/miniconda/system-requirements)
 
 ## CREATING ENVIRONMENT AND INSTALLING PyChrono AND PyDEME
 
-A. Creating and activating conda (miniconda3) env 
+### A. Creating and activating conda (miniconda3) env 
 
 NOTE: "myenv" can be replaced with any name you want for your environment 
 
@@ -61,7 +67,7 @@ NOTE: "myenv" can be replaced with any name you want for your environment
 
     ^activate the environment you just made 
 
-B. INSTALLING PyChrono and PyDEME VIA CONDA 
+### B. INSTALLING PyChrono and PyDEME VIA CONDA 
 
 NOTE: your desired conda environment must be activated before this step 
 
@@ -69,7 +75,7 @@ NOTE: your desired conda environment must be activated before this step
 
     ^while in general this package is avaialbe on conda-forge, the required/newer version is not yet published there.
 
-C. EXTRA DEPENDENCIES 
+### C. EXTRA DEPENDENCIES 
 
 NOTE: your desired conda environment must be activated before this step 
 
@@ -77,9 +83,4 @@ NOTE: your desired conda environment must be activated before this step
 
 `conda install -c conda-forge pandas`
 
-
-
-
-
-
-
+`conda install typing_extensions`
