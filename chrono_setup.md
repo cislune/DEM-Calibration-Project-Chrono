@@ -1,92 +1,146 @@
-## Setup Instructions for PyChrono and PyDEME
+# Setup Instructions for PyChrono and PyDEME
 
-## NOTES 
+This document explains how to install the required software, prepare the environment, and verify required assets for this project.
 
-### A. REMOVING CONDA ENV 
+---
 
-Use the following command to remove a conda env 
+**1. Notes**
 
-`conda env remove --name myenv`
+**Removing a conda environment**  
+Use the following command to remove a conda environment:
 
-### B. LISTING NAMES OF CONDA ENV 
+```
+conda env remove --name myenv
+```
 
-`conda env list` 
+Replace `myenv` with the name of the environment to remove.
 
-will list the names of all of the previously created conda environments on your machine, and there will be an asterisk (*) next to the environment currently activated.
+---
 
-## PRE-REQUISITES 
+**Listing conda environments**  
+Use:
 
-### A. CHECK NVIDIA DRIVER 
+```
+conda env list
+```
 
-Use `nvidia-smi` to check your NVIDIA Driver version. The CUDA Version (top right) should be **12.8 or higher**.
+This displays all existing conda environments. The currently active environment is marked with an asterisk (*).
 
-If your driver is lower than 12.8, please upgrade your NVIDIA Driver. You can find instructions and downloads at:
+---
 
-- [NVIDIA Driver Downloads](https://www.nvidia.com/Download/index.aspx)
-- [NVIDIA Linux Driver Installation Guide](https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html)
+**2. Pre-Requisites**
 
-Follow the official guide for your operating system to update the driver.
+**Check NVIDIA driver**  
+Run:
 
-### B. INSTALL miniconda3 
+```
+nvidia-smi
+```
 
-(link to download shell script: https://www.anaconda.com/download/success)
+The CUDA version shown in the top-right corner should be **12.8 or higher**. If the version is lower, update the NVIDIA driver before proceeding.
 
-miniconda3 is a minimal distribution (i.e lightweight version) of the environment manager Conda. It comes with  
-Python 3 and a minimal base environment. 
+Resources:
 
-For this project, it will be easiest to create an environment (env). It will be like a nice little container for all of your packages, libraries, and other dependencies. 
+- NVIDIA Driver Downloads: https://www.nvidia.com/Download/index.aspx  
+- Linux Installation Guide: https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html  
 
-Once the shell script is downloaded, turn it into an executable using the command 
+---
 
-`sudo chmod +x shell_script_name.sh`  
+**Install Miniconda3**  
+Download the Miniconda shell installer:
 
-(where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
+https://www.anaconda.com/download/success  
 
-then run the shell script via 
+Miniconda is a lightweight Python distribution that includes Conda for environment management.
 
-`./shell_script_name.sh`  
+Installation steps:
 
-(where shell_script_name.sh is the actual name of the miniconda shell script that was downloaded)
+Make the installer executable:
 
-**If you run into issues, it might be worth checking if your machine satisfies the system requriements**  
-(https://www.anaconda.com/docs/getting-started/miniconda/system-requirements)
+```
+sudo chmod +x shell_script_name.sh
+```
 
-## CREATING ENVIRONMENT AND INSTALLING PyChrono AND PyDEME
+Run the installer:
 
-### A. Creating and activating conda (miniconda3) env 
+```
+./shell_script_name.sh
+```
 
-NOTE: "myenv" can be replaced with any name you want for your environment 
+Replace `shell_script_name.sh` with the actual filename you downloaded.
 
-`conda create -n myenv python=3.12 -c conda-forge -y`
+If issues occur, verify system requirements:
 
-    ^creates a conda environment with python version 3.12 (the -y flag skips the confirming prompts) 
+https://www.anaconda.com/docs/getting-started/miniconda/system-requirements
 
-    NOTE: you can use the -y flag for later conda install commands as well if you'd like. has essentially the same purpose as above. 
+---
 
-`conda activate myenv`
+**3. Create Environment and Install Dependencies**
 
-    ^activate the environment you just made 
+**Create and activate environment**  
+Use:
 
-### B. INSTALLING PyChrono and PyDEME VIA CONDA 
+```
+conda create -n myenv python=3.12 -c conda-forge -y
+conda activate myenv
+```
 
-NOTE: your desired conda environment must be activated before this step 
+`myenv` can be replaced with any preferred environment name. The `-y` flag skips confirmation prompts.
 
-`conda install bochengzou::pychrono bochengzou::pydeme -c bochengzou -c conda-forge`
+---
 
-    ^while in general this package is avaialbe on conda-forge, the required/newer version is not yet published there.
+**Install PyChrono, PyDEME, and all required dependencies**  
+Ensure the environment is activated before running:
 
-### C. EXTRA DEPENDENCIES 
+```
+conda install bochengzou::pychrono bochengzou::pydeme -c bochengzou -c conda-forge
 
-NOTE: your desired conda environment must be activated before this step 
+conda install -c conda-forge imageio-ffmpeg pandas numpy matplotlib pyvista
 
-`conda install -c conda-forge imageio-ffmpeg`
+conda install typing_extensions
+```
 
-`conda install -c conda-forge pandas`
+The required PyChrono/PyDEME versions are not yet available through standard conda-forge alone, so the `bochengzou` channel is used.
 
-`conda install typing_extensions`
+---
 
-`conda install -c conda-forge numpy`
+**4. Required Assets**
 
-`conda install -c conda-forge matplotlib`
+**Purpose:**  
+Mesh files are required for wheel and pressure-plate geometry in the simulations.
 
-`conda install -c conda-forge pyvista vtk
+**Wheel meshes**  
+Multiple custom wheel meshes are available in:
+
+```
+reference wheel meshes/
+```
+
+You can switch between different wheel geometries by updating the mesh path in `config.py`.
+
+---
+
+**Required files:**
+
+- `mesh/rover_wheels/viper_wheel_right.obj` (default demo wheel)  
+- `TREAD_Assembly.obj` (example custom wheel)  
+- `reference wheel meshes/pressureplate.obj` (pressure plate mesh)  
+
+If these files are missing or located elsewhere, update their paths in `config.py` before running any scripts.
+
+---
+
+**5. Configuration File**
+
+`config.py` is the central configuration file for the project.
+
+It defines:
+- output directories  
+- solver settings  
+- terrain parameters  
+- material properties  
+- wheel configuration (demo or custom)  
+- pressure plate settings  
+- slip test parameters  
+
+All scripts depend on this file, so it should be reviewed before running simulations.
